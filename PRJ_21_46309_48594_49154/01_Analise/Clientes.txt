@@ -1,0 +1,4 @@
+##--------------Clientes-----------------##
+
+Hospitais/Clínicas de saúde:
+Pacientes que passaram pelo procedimento de traqueostomia e profissionais de saúde que cuidam deles.
