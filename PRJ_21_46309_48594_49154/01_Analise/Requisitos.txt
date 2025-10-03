@@ -1,0 +1,15 @@
+##--------------Requisitos Funcionais-------------##
+R1 Performance da aplicação:  A aplicação deve estar otimizada para expressar o que o paciente quer sem nenhum precalço, seja presencialmente ou remotamente, não podendo haver delay.
+R2 Gestão de mensagens: O website deve receber todas as mensagens que o paciente enviar para o servidor sem qualquer tipo de delay
+R3 Gestão de utilizadores: Todos os utilizadores devem estar registados na base de dados com as devidas permissões, sendo que o registo só pode ser feito no website por utilizadores que sejam profissionais de saúde ou administradores.
+R4 Usabilidade: Tanto a aplicação como o website deve ser intuitivo e de fácil utilização.
+R5 Identificação de pacientes: O paciente deve ter uma sessão iniciada durante o uso da aplicação com os dados correspondentes a este, para que seja identificado no envio de mensagens para o servidor e posteriormente do servidor para o website.
+
+##-------------Requisitos Não Funcionais-----------##
+Registo de um profissional de saúde: O profissional de saúde é registado na base de dados, a partir do website, por um profissional de saúde já registado ou pelo Super User.
+Registo de um paciente: Um profissional de saúde faz o registo dos dados do paciente para que este possa aceder à aplicação com as suas devidas informações.
+Iniciar a aplicação: O paciente inicia a aplicação, efetuando um único inicio de sessão para que as mensagens enviadas estejam identificadas com o nome do paciente que as enviou, e pode realizar qualquer tipo de comunicação que desejar.
+Selecionar categoria de comunicação: O paciente seleciona, das diferentes categorias aquela que contém o que o paciente deseja expressar.
+Comunicação via text-to-speech: O paciente escreve no campo de escrita da componente text-to-speech e seleciona "Play" para converter o texto em som.
+Comunicação via seleção de um botão: O paciente seleciona o botão que expressa um caso específico, enviando uma mensagem para o servidor que posteriormente é enviada para o website.
+Visualização de mensagens: No website, os profissionais de saúde recebem uma notificação que uma mensagem foi enviada por um paciente, a qual podem abrir e visualizar os detalhes da mensagem.

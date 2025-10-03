@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include 'imports.html' %}
+        <script type="module" src="{% static 'js/addMessageFunction.js' %}"></script>
+        <meta name="service-worker-js" content="/static/webpush/webpush_serviceworker.js">
+        <script id="webpush-js" type="module" src="/static/webpush/webpush.js"></script>
+        <title>Register patient</title>
+    </head>
+    
+    <body>
+        <div class="container-fluid px-0">
+            {% include 'navbar.html' %}
+        </div>
+
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h1 class="h3 mb-0">Register user</h1>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    {{ form.username.label_tag }} {{ form.username }}
+                                    {{ form.username.help_text }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.email.label_tag }} {{ form.email }}
+                                    {{ form.email.help_text }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.first_name.label_tag }} {{ form.first_name }}
+                                    {{ form.first_name.help_text }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.last_name.label_tag }} {{ form.last_name }}
+                                    {{ form.last_name.help_text }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.password1.label_tag }} {{ form.password1 }}
+                                    {{ form.password1.help_text|safe }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.password2.label_tag }} {{ form.password2 }}
+                                    {{ form.password2.help_text }}
+                                </div>
+                                <input type="hidden" id="user_type" name="user_type">
+                                <div class="d-grid">
+                                  <button type="submit" class="btn btn-primary btn-block mt-3" onclick="document.getElementById('user_type').value='patient';">
+                                      Register as Patient
+                                  </button>
+                                  {% if user.is_superuser %}
+                                      <button type="submit" class="btn btn-secondary btn-block mt-3" onclick="document.getElementById('user_type').value='nurse';">
+                                          Register as Nurse
+                                      </button>
+                                      <button type="submit" class="btn btn-danger btn-block mt-3" onclick="document.getElementById('user_type').value='admin';">
+                                          Register as Admin
+                                      </button>
+                                  {% endif %}
+                              </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                        addMessage('{{ message|safe }}', 'info', timeout = true);
+                    {% else %}
+                        addMessage('{{ message }}', 'danger', tiemeout = false);
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            });
+        </script>
+    </body>
+</html>

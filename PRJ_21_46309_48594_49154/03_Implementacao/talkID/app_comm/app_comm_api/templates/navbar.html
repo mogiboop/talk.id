@@ -1,0 +1,39 @@
+{% load static %}
+<nav class="navbar navbar-expand-sm navbar-light bg-success" style="padding: 1rem 2rem;">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'app_comm_api:index' %}" style="margin-left: -1rem;">
+      <img src="{% static 'images/4.jpeg' %}" alt="Logo" height="40" />
+      <span class="ml-2" style="font-size: 1.5rem;">Talk.id</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <button id="notification-button" class="notification-button ml-auto" data-url="/subscribe/">
+        <i class="fa-regular fa-bell-slash"></i>
+      </button>
+      <ul class="navbar-nav ml-0 w-25">
+        <li class="nav-item dropdown ml-0 ">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 1.5rem;">
+            {% if user.is_authenticated %} {{ user.username }}
+            {% else %} Username {% endif %}
+          </a>
+          <div class="dropdown-menu w-25" aria-labelledby="navbarDropdown">
+            {% if user.is_authenticated %} {% csrf_token %}
+            <a class="dropdown-item" href="{% url 'app_comm_api:register_users' %}">Register users</a>
+            <a class="dropdown-item" href="{% url 'app_comm_api:manage_accounts' %}">Manage accounts</a>
+            {% if user.is_superuser %}
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/admin">Admin</a>
+              <a class="dropdown-item" href="{% url 'app_comm_api:user_reports' %}">Report</a>
+            {% endif %}
+            <div class="dropdown-divider"></div>
+            <a id="logout" class="dropdown-item" href="{% url 'app_comm_api:logout_user' %}">Logout</a>
+            {% endif %}
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

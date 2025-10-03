@@ -1,0 +1,148 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+{% load pwa %}
+{% progressive_web_app_meta %}
+<link rel="manifest" href="manifest.json">
+<head>
+    {% include 'imports.html' %}
+    <meta name="service-worker-js" content="{% static 'webpush/webpush_serviceworker.js' %}">
+    <script id="webpush-js" type="module" src="{% static 'webpush/webpush.js' %}"></script>
+    <script src="{% static 'js/index.js' %}" ></script>
+    <title>Home</title>
+</head>
+<body>
+
+        <div class="container-fluid px-0">
+            {% include 'navbar.html' %} 
+        </div>
+
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h1 class="h3 mb-0">Recent messages</h1>
+                        </div>
+                        <div class="card-body">
+                            <div id="filter-form" class="mb-4">
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="user-filter">User</label>
+                                        <input type="text" id="user-filter" class="form-control" placeholder="Enter user name">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="begin-datetime-filter">Begin Datetime</label>
+                                        <input type="datetime-local" id="begin-datetime-filter" class="form-control" lang="pt">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="end-datetime-filter">End Datetime</label>
+                                        <input type="datetime-local" id="end-datetime-filter" class="form-control" lang="pt" disabled>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="type-filter">Message Type</label>
+                                        <select id="type-filter" class="form-control">
+                                            <option value="">All</option>
+                                            {% if msg_types %}
+                                                {% for msg in msg_types %}
+                                                    <option value="{{msg.id}}">{{ msg.message_type_name}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="order-filter">Order</label>
+                                        <select id="order-filter" class="form-control">
+                                            <option value="desc">Recent to older</option>
+                                            <option value="asc">Older to recent</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="state-filter">State</label>
+                                        <select id="state-filter" class="form-control">
+                                            <option value="1">Opened</option>
+                                            <option value="2">Closed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row justify-content-center">
+                                    <button id="filter-button" class="btn btn-primary mr-2">Filter</button>
+                                    <button id="reset-button" class="btn btn-secondary ml-2">Reset</button>
+                                </div>
+                            </div>
+                            <div id="mini-screen">
+                                {% if latest_message_list %}
+                                    <ul id="message-list" class="list-group">
+                                        {% for msg in latest_message_list|slice:":10" %}
+                                            <li class="list-group-item {% if not msg.viewed %}blink{% endif %}" 
+                                                data-user="{{ msg.user.first_name }} {{ msg.user.last_name }}" 
+                                                data-msg_type_name="{{ msg.message_type.message_type_name }}" 
+                                                data-id="{{ msg.id }}" 
+                                                data-info="{{ msg.message_info }}" 
+                                                data-type="{{ msg.message_type.id }}" 
+                                                data-datetime="{{ msg.date_time }}"
+                                                {% if msg.level %}
+                                                    data-level="{{ msg.level }}"
+                                                {% endif %}>
+                                                <div class="message-info">{{ msg.message_info }}</div>
+                                                <div class="message-datetime">{{ msg.date_time }}</div>
+                                            </li>
+                                        {% endfor %}
+                                        {% if latest_message_list|length > 10 %}
+                                            <button id="load-more" class="btn btn-primary mt-2" style="display: block;">Load More</button>
+                                        {% else %}
+                                            <button id="load-more" class="btn btn-primary mt-2" style="display: none;">Load More</button>
+                                        {% endif %}
+                                    </ul>
+                                    <p id="no-messages" class="text-center mt-2" style="display: none;">No messages are available.</p>
+                                {% else %}
+                                    <ul id="message-list" class="list-group">
+                                        <button id="load-more" class="btn btn-primary mt-2" style="display: none;">Load More</button>
+                                    </ul>
+                                    <p id="no-messages" class="text-center mt-2" style="display: block;">No messages are available.</p>
+                                {% endif %}
+                            </div>
+                            <div id="message-details" class="card mt-4" style="display: none;" data-id="">
+                                <div class="card-body">
+                                    <h3 id="details-info" class="card-title">Message info</h3>
+                                    <h5 id="details-user" class="card-title">Username</h5>
+                                    <h6 id="details-level" class="card-title">Level</h6>
+                                    <p id="details-datetime" class="card-text">Datetime</p>
+                                    <h5 id="solution-title">Solutions:</h2>
+                                    <ul id="solution-list" class="list-group">
+                                        
+                                    </ul>
+                                    <div id="image-container" class="image-container" style="position: relative;">
+                                        <img id="details-image" src="" alt="Message Image" class="img-fluid">
+                                        <canvas id="canvas" style="position: absolute; top: 0; left: 0;"></canvas>
+                                    </div>
+                                    <textarea id="solution" name="solution" class="form-control mt-3" maxlength="255" placeholder="Enter solution here..."></textarea>
+                                    <div class="d-flex justify-content-end mt-3">
+                                        <button id="done-button" class="btn btn-primary mr-2">Done</button>
+                                        <button id="close-button" class="btn btn-danger">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                        addMessage('{{ message|safe }}', 'info', timeout = true);
+                    {% else %}
+                        addMessage('{{ message|safe }}', 'danger', tiemeout = false);
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        });
+        </script>
+    </body>
+</html>

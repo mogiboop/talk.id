@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include 'imports.html' %}
+    <meta
+      name="service-worker-js"
+      content="/static/webpush/webpush_serviceworker.js"
+    />
+    <script
+      id="webpush-js"
+      type="module"
+      src="/static/webpush/webpush.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{% static 'js/user_solutions.js' %}"></script>
+    <title>Manage accounts</title>
+  </head>
+  <body>
+    <div class="container-fluid px-0">{% include 'navbar.html' %}</div>
+
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header text-center">
+              <h1 class="h3 mb-0">User Report</h1>
+            </div>
+            <div class="card-body">
+              <div id="filter-form" class="mb-4">
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                    <label for="user_autocomplete" class="form-label"
+                      >Select User:</label
+                    >
+                    <input
+                      list="users"
+                      id="user_autocomplete"
+                      name="user_autocomplete"
+                      class="form-control"
+                      placeholder="Start typing a username"
+                    />
+                    <datalist id="users">
+                      {% for user in users_list %}
+                      <option
+                        value="{{ user.username }}"
+                        data-id="{{ user.id }}"
+                      >
+                        {% endfor %}
+                      </option>
+                    </datalist>
+                    <input type="hidden" id="selected_user_id" />
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="begin-datetime-filter">Begin Datetime</label>
+                    <input
+                      type="datetime-local"
+                      id="begin-datetime-filter"
+                      class="form-control"
+                    />
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="end-datetime-filter">End Datetime</label>
+                    <input
+                      type="datetime-local"
+                      id="end-datetime-filter"
+                      class="form-control"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div class="form-row justify-content-center">
+                  <button id="get-button" class="btn btn-primary mr-2">
+                    Get
+                  </button>
+                  <button id="clear-button" class="btn btn-secondary ml-2">
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div id="report-container" class="report-container">
+              <p
+                id="no-solutions"
+                class="text-center mt-2"
+                style="display: none"
+              >
+                No solutions available.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var toggleEmailButtons = document.querySelectorAll(".toggle-email");
+        toggleEmailButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            var emailDiv = this.previousElementSibling;
+            if (emailDiv.classList.contains("d-none")) {
+              emailDiv.classList.remove("d-none");
+              this.textContent = "Hide Email";
+            } else {
+              emailDiv.classList.add("d-none");
+              this.textContent = "Show Email";
+            }
+          });
+        });
+
+        var deleteUserButtons = document.querySelectorAll(".delete-user");
+        deleteUserButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            var userId = this.closest("li").dataset.id;
+            addMessage("teste", "warning");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
